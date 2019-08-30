@@ -1,17 +1,18 @@
 <!DOCTYPE html>
-<html>
+<html lang="eng">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <title>SectorApp</title>
 </head>
 <body>Please enter your name and pick the Sectors you are currently involved in.
 <br>
 <br>
-Name:
-<input type="text">
+<label for="name">Name:</label>
+<input type="text" id="name">
 <br>
 <br>
-Sectors:
-<select multiple="" size="5">
+<label for="sectors">Sectors:</label>
+<select multiple="" size="5" id="sectors">
     <option value="1">Manufacturing</option>
     <option value="19">&nbsp;&nbsp;&nbsp;&nbsp;Construction materials</option>
     <option value="18">&nbsp;&nbsp;&nbsp;&nbsp;Electronics and Optics</option>
@@ -108,7 +109,8 @@ Sectors:
 
 <br>
 <br>
-<input type="checkbox"> Agree to terms
+<input type="checkbox" id="terms">
+<label for="terms"> Agree to terms</label>
 
 <br>
 <br>
