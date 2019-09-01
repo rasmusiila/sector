@@ -22,7 +22,7 @@ Route::get('/', function () {
     $sectors = Sector::orderBy('created_at', 'asc')->get();
     // TODO: get all sectors
     return view('broken', [
-        'sectors' => $sectors
+        'sectors' => $sectors,
     ]);
 });
 
@@ -32,28 +32,59 @@ Route::get('/', function () {
 Route::post('/person', function (Request $request) {
     $validator = Validator::make($request->all(), [
         'name' => 'required|max:255',
+        'sectors' => 'required',
+        'terms' => 'required',
     ]);
 
     if ($validator->fails()) {
         return redirect('/')
-            ->withInput()
+            ->withInput() // TODO: I don't think this line does anything, see what you can do to keep filled fields
             ->withErrors($validator);
     }
 
-    // TODO: maybe create a service file for this
+    // TODO: maybe create a service file for this because i believe this section is not very pretty in the controller module
     $person = new Person;
     $person->name = $request->name;
     $person->sectors = $request->sectors;
     $person->terms = $request->has('terms');
 
     $person->save();
+    error_log($person->id);
 
-    return redirect('/'); // TODO: return with the existing data
+    return redirect('/')
+        ->with('person', $person);
 });
 
 /**
  * Update An Existing Person
  */
-Route::post('/person/{id}', function ($id) {
-    //
+Route::post('/person/{id}', function ($id, Request $request) {
+    $validator = Validator::make($request->all(), [
+        'name' => 'required|max:255',
+        'sectors' => 'required',
+        'terms' => 'required',
+    ]);
+
+    if ($validator->fails()) {
+        $requested_person = new Person;
+        $requested_person->id = $id;
+        $requested_person->name = $request->name;
+        $requested_person->sectors = $request->sectors;
+        $requested_person->terms = $request->has('terms');
+        return redirect('/')
+            ->with('person', $requested_person)
+            ->withInput()
+            ->withErrors($validator);
+    }
+
+    $person = Person::find($id);
+
+    $person->name = $request->name;
+    $person->sectors = $request->sectors;
+    $person->terms = $request->has('terms');
+
+    $person->save();
+
+    return redirect('/')
+        ->with('person', $person);
 });

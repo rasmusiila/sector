@@ -6,27 +6,35 @@
 
     Please enter your name and pick the Sectors you are currently involved in.
     <!-- New Person Form -->
-    <form action="/person" method="POST" class="form-horizontal">
+    @if(session('person'))
+        Existing person
+    @else
+        New person
+    @endif
+    <form action=/person/{{ (session('person')) ? session('person')->id : ""}} method="POST" class="form-horizontal">
         {{ csrf_field() }}
 
     <!-- Task Name -->
         <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" id="name" name="name">
+            <input type="text" id="name" name="name" value={{ (session('person')) ? session('person')->name : ""}}>
         </div>
 
         <div class="form-group">
             <label for="sectors">Sectors:</label>
-            <select multiple="" size="50" id="sectors" name="sectors[]">
+            <select multiple="" size="10" id="sectors" name="sectors[]">
                 {{--        TODO: size was set to 50 for developing, was originally 5--}}
                 @foreach ($sectors as $sector)
-                    <option value="{{ $sector->registry_id }}">{{ $sector->name }}</option>
+                    <option value="{{ $sector->registry_id }}"
+                        {{ session('person') && in_array($sector->registry_id, session('person')->sectors) ? "selected" : ""}}>
+                        {{ $sector->name }}
+                    </option>
                 @endforeach
             </select>
         </div>
 
         <div class="form-group">
-            <input type="checkbox" id="terms" name="terms">
+            <input type="checkbox" id="terms" name="terms" {{ session('person') && session('person')->terms ? "checked" : ""}}>
             <label for="terms"> Agree to terms</label>
         </div>
 
