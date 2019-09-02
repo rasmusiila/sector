@@ -19,7 +19,18 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
 Route::get('/', function () {
-    $sectors = Sector::orderBy('created_at', 'asc')->get();
+    // get the root sectors
+    $sectors = Sector::where('parent_id', null)->get();
+    // recursively get all the children
+    foreach ($sectors as $sector) {
+        error_log("Parent: " . $sector->registry_id);
+        error_log($sector->children());
+        foreach ($sector->children() as $child_sector) {
+            error_log($child_sector->registry_id);
+        }
+
+    }
+
     // TODO: get all sectors
     return view('broken', [
         'sectors' => $sectors,

@@ -24,11 +24,30 @@
             <label for="sectors">Sectors:</label>
             <select multiple="" size="10" id="sectors" name="sectors[]">
                 {{--        TODO: size was set to 50 for developing, was originally 5--}}
+{{--                TODO: This is obviously incredibly ugly, you should not do this in the view portion, also needs recursion, also not sure if the parent classes should be selectable--}}
                 @foreach ($sectors as $sector)
                     <option value="{{ $sector->registry_id }}"
                         {{ session('person') && in_array($sector->registry_id, session('person')->sectors) ? "selected" : ""}}>
                         {{ $sector->name }}
                     </option>
+                    @foreach ($sector->children() as $child_sector)
+                        <option value="{{ $child_sector->registry_id }}"
+                            {{ session('person') && in_array($child_sector->registry_id, session('person')->sectors) ? "selected" : ""}}>
+                            &emsp;{{ $child_sector->name }}
+                        </option>
+                        @foreach ($child_sector->children() as $second_child_sector)
+                            <option value="{{ $second_child_sector->registry_id }}"
+                                {{ session('person') && in_array($second_child_sector->registry_id, session('person')->sectors) ? "selected" : ""}}>
+                                &emsp;&emsp;{{ $second_child_sector->name }}
+                            </option>
+                            @foreach ($second_child_sector->children() as $third_child_sector)
+                                <option value="{{ $third_child_sector->registry_id }}"
+                                    {{ session('person') && in_array($third_child_sector->registry_id, session('person')->sectors) ? "selected" : ""}}>
+                                    &emsp;&emsp;&emsp;{{ $third_child_sector->name }}
+                                </option>
+                            @endforeach
+                        @endforeach
+                    @endforeach
                 @endforeach
             </select>
         </div>
