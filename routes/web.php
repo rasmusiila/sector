@@ -18,22 +18,43 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Validator;
 
-Route::get('/', function () {
-    // get the root sectors
-    $sectors = Sector::where('parent_id', null)->get();
-    // recursively get all the children
-    foreach ($sectors as $sector) {
-        error_log("Parent: " . $sector->registry_id);
-        error_log($sector->children());
-        foreach ($sector->children() as $child_sector) {
-            error_log($child_sector->registry_id);
-        }
-
+// TODO: these functions should not be in this file should they
+function getSectors($parentId = null)
+{
+    $sectors = [];
+    foreach(Sector::where('parent_id', $parentId)->get() as $sector)
+    {
+        array_push($sectors,
+            [
+                'item' => $sector,
+                'children' => getSectors($sector->registry_id)
+            ]
+        );
     }
+    return $sectors;
+}
 
-    // TODO: get all sectors
+function toSelect($arr, $depth = 0) {
+    $html = '';
+    if (session('person')) {
+        error_log('yes');
+    }
+    foreach ($arr as $v) {
+        $html .= '<option value="' . $v['item']['registry_id'] . '" ';
+        if (session('person') && in_array($v['item']['registry_id'], session('person')->sectors)) {
+            $html .= 'selected';
+        }
+        $html .= '>' . str_repeat("&emsp;", $depth) . $v['item']['name'] . '</option>' . PHP_EOL;
+        if (array_key_exists('children', $v)) {
+            $html .= toSelect($v['children'], $depth + 1);
+        }
+    }
+    return $html;
+}
+
+Route::get('/', function () {
     return view('broken', [
-        'sectors' => $sectors,
+        'sectors' => toSelect(getSectors()),
     ]);
 });
 
