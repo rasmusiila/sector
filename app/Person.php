@@ -10,4 +10,9 @@ class Person extends Model
     protected $casts = [
         'sectors' => 'array'
     ];
+
+    public function sectors()
+    {
+        return $this->morphMany('App/Sector', 'sectorable');
+    }
 }

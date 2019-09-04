@@ -22,8 +22,7 @@ use Illuminate\Support\Facades\Validator;
 function getSectors($parentId = null)
 {
     $sectors = [];
-    foreach(Sector::where('parent_id', $parentId)->get() as $sector)
-    {
+    foreach (Sector::where('parent_id', $parentId)->get() as $sector) {
         array_push($sectors,
             [
                 'item' => $sector,
@@ -34,11 +33,9 @@ function getSectors($parentId = null)
     return $sectors;
 }
 
-function toSelect($arr, $depth = 0) {
+function toSelect($arr, $depth = 0)
+{
     $html = '';
-    if (session('person')) {
-        error_log('yes');
-    }
     foreach ($arr as $v) {
         $html .= '<option value="' . $v['item']['registry_id'] . '" ';
         if (session('person') && in_array($v['item']['registry_id'], session('person')->sectors)) {
@@ -53,7 +50,7 @@ function toSelect($arr, $depth = 0) {
 }
 
 Route::get('/', function () {
-    return view('broken', [
+    return view('person', [
         'sectors' => toSelect(getSectors()),
     ]);
 });
@@ -81,7 +78,6 @@ Route::post('/person', function (Request $request) {
     $person->terms = $request->has('terms');
 
     $person->save();
-    error_log($person->id);
 
     return redirect('/')
         ->with('person', $person);
